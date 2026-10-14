@@ -3,8 +3,9 @@
 Türkçe · **[English](README.md)**
 
 Bir kanal fikrini tamamen otomatik çalışan bir YouTube kanalına çevirir: senaryo → seslendirme → görseller →
-bitmiş video ve Shorts → SEO metinleri ve kapak → zamanlanmış yükleme. Kurulumda birkaç soruyu bir kez
-cevaplarsınız; sonra yeni bölümler sizin takviminize göre üretilir. İsterseniz onay adımlarıyla kontrol sizde kalır.
+bitmiş video ve Shorts → SEO metinleri ve kapak → zamanlanmış yükleme. Kurulum, yapay zekayla soru-cevap şeklinde
+adım adım ilerler ve bir test videosuyla biter; sonra yeni bölümler sizin takviminize göre üretilir. İsterseniz onay
+adımlarıyla kontrol sizde kalır.
 
 Gerçek bir çocuk animasyon kanalının üretim hattından çıkarıldı ve her formata uyacak şekilde genelleştirildi:
 çocuk hikayeleri, eğitici anlatım, ilginç bilgiler / liste videoları, hikaye anlatımı, uyku masalları ya da
@@ -14,7 +15,7 @@ kendi formatınız.
 
 | Adım | Ne olur | Seçenekler |
 | --- | --- | --- |
-| Kurulum sihirbazı | Kanalınızı sorar; `kanal/kanal.yaml` ve size özel kanal kimliği `kanal/KANAL.md` dosyasını yazar | Konsepti yapay zeka detaylandırabilir: karakterler, görsel stil, anahtar kelimeler, ilk bölüm fikirleri |
+| Kurulum sihirbazı | 6 adımda soru-cevapla kanalı kurar, her adımda "Beğendin mi?" diye sorar; `kanal/kanal.yaml`, size özel `kanal/KANAL.md`, bölüm planı ve bir test videosu üretir | Konsept, karakterler ve senaryoyu yapay zeka yazar ya da siz yazarsınız |
 | Senaryo | Sahneler, çekimler, her dilde replikler, resim tarifleri ve Shorts seçimi | **Her şeyi yapay zeka yazar** · **siz fikir verirsiniz, yapay zeka yazar** · **siz yazarsınız, yapay zeka çevirir/storyboard yapar** |
 | Ses | Her replik ve dil için ayrı ses; temizlenir, ses düzeyi eşitlenir, önbelleğe alınır | **ElevenLabs** · **Google Cloud TTS (Chirp 3 HD)** · **Gemini TTS** · ücretsiz test sesi |
 | Görüntü | Her çekime (ya da sahneye) bir resim + yavaş kamera hareketi | **Yapay zeka resmi** (Gemini / OpenAI; tutarlılık için karakter referans resmi) · **kukla** (PNG katmanlar + dudak senkronu) · **kendi resimleriniz** · test kartları · **eklenti** |
@@ -36,20 +37,41 @@ git clone https://github.com/<siz>/auto-video-studio.git
 cd auto-video-studio
 python -m venv .venv && . .venv/bin/activate      # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
-python studio.py kurulum        # kurulum sihirbazı
-python studio.py doktor         # araçları, anahtarları, sesleri kontrol eder
-python studio.py yeni           # ilk bölümü üretir
+python studio.py kurulum        # adım adım kurulum, sonunda test videosu
 ```
 
-Önce ücretsiz deneyin: `python studio.py kurulum --cevaplar ornekler/cevaplar-ornek.yaml`, sonra
-`ornekler/senaryo-ornegi.tr.md` dosyasını `kanal/icerik/senaryolar/` içine kopyalayıp `python studio.py yeni`.
-Test sesleriyle iki dilli kısa bir kukla bölümü, altyazılar, bir Short, SEO metni ve kapak çıkar.
+Önce ücretsiz deneyin: `python studio.py kurulum --cevaplar ornekler/cevaplar-ornek.yaml`. Hiç soru sormadan, anahtarsız
+iki dilli kısa bir kukla bölümü üretir: `cikti/<id>/video.mp4`, altyazılar, bir Short, SEO metni ve kapak.
+
+## Kurulum adım adım
+
+`python studio.py kurulum` sizinle konuşarak ilerler. Her adımın sonunda sonucu gösterir ve **"Beğendin mi?"** diye
+sorar: Enter'a basarsanız sonraki adıma geçer, ne değişsin yazarsanız (ör. "karakterler daha komik olsun") o adımı
+yeniden yapar. Ctrl+C ile çıkabilirsiniz; komutu tekrar çalıştırınca kaldığınız adımdan devam eder.
+
+1. **Başlangıç:** video dilleri ve yardımcı yapay zeka (Claude, Gemini ya da OpenAI). Anahtarı oraya yapıştırırsınız
+   ya da `.env` dosyasında hangi satıra yazacağınız gösterilir; anahtar denenir.
+2. **Kanal konsepti:** kanalı kendi cümlelerinizle anlatırsınız; yapay zeka fikrinize özel birkaç soru sorar, sonra
+   ad önerileri, konsept, hedef kitle, ton, bölüm kalıbı, yazım kuralları ve anahtar kelimeleri içeren bir taslak yazar.
+3. **Karakterler ve görseller:** karakterleri ve görsel stili ya siz detaylı istemle (prompt) tarif edersiniz ya da
+   yapay zeka konsepte göre yazar. Yapay zeka resimleri seçerseniz her karakterin referans resmi çizilir; beğenmezseniz
+   ne değişsin yazarsınız, yeniden çizilir.
+4. **Senaryo ve bölümler:** elinizde örnek senaryo varsa dosya yolunu verir ya da yapıştırırsınız. Programın senaryo
+   biçimindeyse ilk bölüm o olur; başka biçimdeyse üslup örneği olarak `KANAL.md`'ye eklenir. "Sen yaz" derseniz yapay
+   zeka yazar. Ardından bir bölüm planı (`kanal/icerik/fikirler.md`) ve ilk bölümün tam metni hazırlanır.
+5. **Seslendirme:** ElevenLabs, Google ya da Gemini. Anahtarı ister ya da nereye ekleneceğini söyler; her karakter
+   için bir ses seçersiniz ve örnek bir cümle dinletilir (`kanal/ses-ornekleri/`).
+6. **Test videosu:** ilk bölümden kısa (ilk 2 sahne) ya da tam bir video üretir: `cikti/<id>/video.mp4`.
+
+Gerisi sizde: `python studio.py yeni` ile sıradaki bölüm, `youtube-baglan` ile YouTube, `zamanlayici --kur` ile otomatik
+üretim. Tam bir test bölümü yükleme onayında bekler; YouTube'u bağladıktan sonra `python studio.py onayla <id>` ile
+yüklenir. Bütün ayarlar sonradan `kanal/kanal.yaml` ve `kanal/KANAL.md` içinden değiştirilebilir.
 
 ## Komutlar
 
 | Komut | Ne yapar |
 | --- | --- |
-| `kurulum` | Kurulum sihirbazı (`--cevaplar dosya.yaml` ile sorusuz) |
+| `kurulum` | Adım adım kurulum ve test videosu (`--cevaplar dosya.yaml` ile sorusuz) |
 | `doktor` | ffmpeg, anahtarlar, ses kimlikleri, referans resimleri, YouTube girişi |
 | `yeni` | Sıradaki bölümü üretir (`--fikir "…"` ya da `--dosya senaryo.md` ile sırayı atlar) |
 | `durum` | Bütün bölümler, aşamaları ve YouTube bağlantıları |
@@ -77,7 +99,8 @@ doğrudan düzenleyin ya da `duzelt` çalıştırın, sonra `onayla`. Bir bölü
 ## Senaryo modları
 
 - **ai** — yapay zeka yeni bir konu seçer (önceki bölümleri görür, tekrar etmez) ve yazar.
-- **idea (fikir)** — `kanal/icerik/fikirler.md` içine her satıra bir fikir yazın; en üstteki kullanılır ve "Kullanılanlar"a taşınır.
+- **idea (fikir)** — `kanal/icerik/fikirler.md` içine her satıra bir fikir yazın (kurulum burayı bölüm planıyla doldurur);
+  en üstteki kullanılır ve "Kullanılanlar"a taşınır. `fallback_to_ai: true` ise liste bitince konuyu yapay zeka seçer.
 - **manual (elle)** — senaryoları basit Markdown biçiminde (`ornekler/senaryo-ornegi.*.md`) `kanal/icerik/senaryolar/`
   klasörüne yazın. Yapay zeka tanımlıysa eksik çeviriler, resim tarifleri ve Shorts doldurulur; sizin metniniz kelimesi kelimesine kalır.
 

@@ -3,8 +3,8 @@
 **[Türkçe](README.tr.md)** · English
 
 Turn a channel idea into a fully automatic YouTube channel: scripts → voices → pictures → finished video and Shorts
-→ SEO metadata and thumbnail → scheduled upload. You answer a few questions once; after that new episodes are
-produced on your schedule, with optional approval steps where you stay in control.
+→ SEO metadata and thumbnail → scheduled upload. Setup is a step-by-step conversation with an AI that ends with a
+test video; after that new episodes are produced on your schedule, with optional approval steps where you stay in control.
 
 Built from a real kids' animation channel pipeline and generalized for any format: kids' stories, educational
 explainers, facts/list videos, storytelling, sleep stories, or your own.
@@ -13,7 +13,7 @@ explainers, facts/list videos, storytelling, sleep stories, or your own.
 
 | Step | What happens | Options |
 | --- | --- | --- |
-| Setup wizard | Asks about your channel and writes `kanal/kanal.yaml` + a personal channel bible `kanal/KANAL.md` | AI can flesh out the concept: characters, visual style, keywords, first episode ideas |
+| Setup wizard | Builds the channel in 6 question-and-answer steps, asking "Do you like it?" after each; writes `kanal/kanal.yaml`, a personal `kanal/KANAL.md`, an episode plan and a test video | The AI writes the concept, characters and scripts, or you do |
 | Script | Full episode with scenes, shots, dialogue per language, image prompts and Shorts picks | **AI writes everything** · **you give an idea, AI writes** · **you write, AI translates/storyboards** |
 | Voices | One clip per line and language, cleaned, level-matched, cached | **ElevenLabs** · **Google Cloud TTS (Chirp 3 HD)** · **Gemini TTS** · free test voice |
 | Pictures | One image per shot (or per scene) with slow camera moves | **AI images** (Gemini / OpenAI, with character reference images for consistency) · **puppets** (PNG layers + lip sync) · **your own images** · test cards · **plugin** |
@@ -35,14 +35,34 @@ git clone https://github.com/<you>/auto-video-studio.git
 cd auto-video-studio
 python -m venv .venv && . .venv/bin/activate      # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
-python studio.py setup          # or: python studio.py kurulum
-python studio.py doctor         # checks tools, keys, voices
-python studio.py new            # produce the first episode
+python studio.py setup          # step-by-step setup, ends with a test video (or: kurulum)
 ```
 
-Try it for free first: `python studio.py setup --answers ornekler/cevaplar-ornek.yaml`, copy
-`ornekler/senaryo-ornegi.en.md` into `kanal/icerik/senaryolar/`, then `python studio.py new`.
-You get a short two-language puppet episode with test voices, subtitles, a Short, SEO text and a thumbnail.
+Try it for free first: `python studio.py setup --answers ornekler/cevaplar-ornek.yaml`. Without questions or keys it
+makes a short two-language puppet episode: `cikti/<id>/video.mp4`, subtitles, a Short, SEO text and a thumbnail.
+
+## Setup, step by step
+
+`python studio.py setup` talks you through it. After each step it shows the result and asks **"Do you like it?"**:
+press Enter to move on, or type what to change (e.g. "make the characters funnier") and the step is redone.
+Press Ctrl+C any time; running the command again continues where you left off.
+
+1. **Getting started:** video languages and the helper AI (Claude, Gemini or OpenAI). Paste the key, or it shows which
+   line of `.env` to put it on; the key is tested.
+2. **Channel concept:** describe the channel in your own words; the AI asks a few questions specific to your idea, then
+   drafts name ideas, concept, audience, tone, episode formula, writing rules and keywords.
+3. **Characters and visuals:** either you write detailed prompts for the characters and visual style, or the AI writes
+   them from the concept. With AI images a reference picture of each character is drawn; type changes to redraw it.
+4. **Scripts and episodes:** give an example script (file path or paste). If it is in the studio's script format it
+   becomes episode 1; otherwise it is added to `KANAL.md` as a style reference. Say "you write it" and the AI writes.
+   Then an episode plan (`kanal/icerik/fikirler.md`) and the full first episode are drafted.
+5. **Voices:** ElevenLabs, Google or Gemini. It asks for the key or tells you where it goes; you pick a voice per
+   character and hear a sample line (`kanal/ses-ornekleri/`).
+6. **Test video:** renders a short (first 2 scenes) or full video of the first episode: `cikti/<id>/video.mp4`.
+
+The rest is yours: `python studio.py new` for the next episode, `youtube-connect` for YouTube, `scheduler --install` for
+automatic production. A full test episode waits at the upload gate; after connecting YouTube, `python studio.py approve
+<id>` uploads it. Every setting can be changed later in `kanal/kanal.yaml` and `kanal/KANAL.md`.
 
 ## Commands
 
@@ -50,7 +70,7 @@ Every command has an English and a Turkish name.
 
 | Command | What it does |
 | --- | --- |
-| `setup` / `kurulum` | Setup wizard (`--answers file.yaml` for non-interactive) |
+| `setup` / `kurulum` | Step-by-step setup and test video (`--answers file.yaml` for non-interactive) |
 | `doctor` / `doktor` | Checks ffmpeg, keys, voice ids, references, YouTube login |
 | `new` / `yeni` | New episode from the queue (`--idea "…"` or `--file script.md` to override) |
 | `status` / `durum` | All episodes, their stage and YouTube links |
@@ -78,7 +98,8 @@ Gates in brackets are on by default. During script review open `cikti/<id>/senar
 ## Script modes
 
 - **ai** — the AI picks a fresh topic (it sees earlier episodes and avoids repeats) and writes it.
-- **idea** — put one idea per line in `kanal/icerik/fikirler.md`; the top one is used and moved to "Used".
+- **idea** — put one idea per line in `kanal/icerik/fikirler.md` (setup fills it with an episode plan); the top one is
+  used and moved to "Used". With `fallback_to_ai: true` the AI picks its own topics when the list is empty.
 - **manual** — write scripts in a simple Markdown format (`ornekler/senaryo-ornegi.*.md`) into
   `kanal/icerik/senaryolar/`. With an AI configured, missing translations, image prompts and Shorts are filled in
   while your text stays word for word.

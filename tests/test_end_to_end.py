@@ -17,12 +17,12 @@ def test_full_pipeline(tmp_path):
     run = lambda *a: subprocess.run([sys.executable, str(REPO / "studio.py"), *a], env=env, cwd=tmp_path,
                                     capture_output=True, text=True, timeout=900)
     r = run("kurulum", "--cevaplar", str(REPO / "ornekler" / "cevaplar-ornek.yaml"))
-    assert r.returncode == 0, r.stderr
-    (tmp_path / "kanal/icerik/senaryolar/ay.md").write_text((REPO / "ornekler/senaryo-ornegi.tr.md").read_text(encoding="utf-8"), encoding="utf-8")
-    r = run("yeni")
     assert r.returncode == 0, r.stdout + r.stderr
+    # the wizard's last step renders the example script as the test video
     ep = next((tmp_path / "cikti").glob("*-ay-neden-bizi-takip-ediyor"))
-    assert json.loads((ep / "durum.json").read_text())["stage"] == "done"
+    assert json.loads((ep / "durum.json").read_text())["stage"] == "upload_review"
+    assert "Bir 'neden?' sorusu" in (tmp_path / "kanal/KANAL.md").read_text(encoding="utf-8")
+    assert not (tmp_path / "kanal/.kurulum.json").exists()
     probe = subprocess.run(["ffprobe", "-v", "error", "-show_entries", "stream=codec_type", "-of", "csv=p=0", str(ep / "video.mp4")],
                            capture_output=True, text=True).stdout.split()
     assert probe.count("audio") == 2 and probe.count("video") == 1
@@ -31,3 +31,9 @@ def test_full_pipeline(tmp_path):
     seo_ = json.loads((ep / "seo.json").read_text())
     assert seo_["video"]["en"]["title"] == "Why Does the Moon Follow Us?"
     assert (ep / "kapak.tr.jpg").exists()
+    # the test episode is not produced again; YouTube is off, so approving finishes it without an upload
+    r = run("yeni")
+    assert r.returncode != 0 and "kanal/icerik/senaryolar" in (r.stdout + r.stderr)
+    r = run("onayla", ep.name)
+    assert r.returncode == 0, r.stdout + r.stderr
+    assert json.loads((ep / "durum.json").read_text())["stage"] == "done"

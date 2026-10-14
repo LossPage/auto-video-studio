@@ -73,6 +73,11 @@ def create(cfg, source: dict | None = None) -> str:
         sc = S.generate_ai(cfg, source["idea"])
     else:
         sc = S.generate_ai(cfg)
+    return create_from_script(cfg, sc, source)
+
+
+def create_from_script(cfg, sc: dict, source: dict, approved: bool = False) -> str:
+    """Store a finished script as a new episode (used by `create` and by the setup wizard's test video)."""
     eid = S.episode_id(sc, cfg)
     n = 2
     while ep_dir(eid).exists():
@@ -83,7 +88,7 @@ def create(cfg, source: dict | None = None) -> str:
     (d / "senaryo.md").write_text(S.to_markdown(sc, cfg), encoding="utf-8")
     if source["mode"] == "idea":
         S.mark_idea_used(source["idea"], eid)
-    st = dict(id=eid, stage="script_review" if cfg["script"].get("approval", True) else "visuals", source=source,
+    st = dict(id=eid, stage="script_review" if cfg["script"].get("approval", True) and not approved else "visuals", source=source,
               created=dt.datetime.now().isoformat(timespec="seconds"), stats=S.stats(sc, cfg))
     _cost(st, "llm_script", list(llm.USAGE)); llm.USAGE.clear()
     save_state(eid, st)

@@ -1,38 +1,52 @@
 # Example answers for a non-interactive setup:  python studio.py kurulum --cevaplar ornekler/cevaplar-ornek.yaml
-# Free test channel: placeholder voices and pictures, no API keys needed. Change providers to go live.
+# Free test channel: no API keys, test voices, puppet pictures. Every "Beğendin mi?" review is accepted automatically.
+# Keys are the wizard's question ids; anything missing uses the default.
 ui_language: tr
-name: Mavi ve Kirpi
-type: kids_story
-concept: "Meraklı tavşan Mavi ve kirpi arkadaşı her bölümde doğayla ilgili bir 'neden?' sorusunun cevabını arar."
+# 1 Başlangıç
 languages: [tr, en]
 multi_language: multi_audio
-made_for_kids: true
+llm_provider: none
+# 2 Konsept
+type: kids_story
+concept: "Meraklı tavşan Mavi ve kirpi arkadaşı her bölümde doğayla ilgili bir 'neden?' sorusunun cevabını arar."
 audience: "4-7 yaş"
+tone: "sıcak, meraklı, eğlenceli"
+episode_formula: "Bir 'neden?' sorusu sorulur, küçük bir maceradan sonra cevap bulunur."
+name: Mavi ve Kirpi
 target_minutes: 3
 shorts_per_episode: 1
-aspect: "16:9"
-llm_provider: none
-script_mode: manual
-written_language: tr
-script_approval: false
+made_for_kids: true
+keywords: ["çocuk masalları", "kids stories", "neden sorusu"]
+hashtags: ["MaviVeKirpi"]
+# 3 Karakterler ve görseller
+cast_mode: me
 character_count: 2
 char1_name: Mavi
 char1_description: "small blue bunny with long ears, light-blue belly, big curious eyes"
+char1_personality: "Her şeyi merak eder, soru sormayı sever."
 char1_voice_style: "young girl, bright and curious"
 char2_name: Kirpi
 char2_description: "small brown hedgehog with soft spikes and a round belly"
+char2_personality: "Neşeli ve aceleci, ama iyi bir dinleyici."
 char2_voice_style: "young boy, cheerful and quick"
 narrator: true
-visual_mode: puppet
 visual_style: "bright 2D cartoon, soft shading"
+visual_mode: puppet
 image_provider: placeholder
+# 4 Senaryo ve bölümler
+written_language: tr
+script_source: example
+example_script: ornekler/senaryo-ornegi.tr.md
+script_mode: manual
+script_approval: false
+# 5 Seslendirme
 voice_provider: placeholder
+# 6 Test videosu
+test_video: true
+test_length: full
+# Not asked by the wizard (set them later in kanal/kanal.yaml); an answers file may still fill them in:
 timezone: Europe/Istanbul
 produce_days: [mon, thu]
 produce_time: "09:00"
 publish_times: ["17:00"]
-publish_days: []
 youtube: false
-keywords: ["çocuk masalları", "kids stories", "neden sorusu"]
-hashtags: ["MaviVeKirpi"]
-music_dir: ""
