@@ -1,0 +1,38 @@
+# Example answers for a non-interactive setup:  python studio.py kurulum --cevaplar ornekler/cevaplar-ornek.yaml
+# Free test channel: placeholder voices and pictures, no API keys needed. Change providers to go live.
+ui_language: tr
+name: Mavi ve Kirpi
+type: kids_story
+concept: "Meraklı tavşan Mavi ve kirpi arkadaşı her bölümde doğayla ilgili bir 'neden?' sorusunun cevabını arar."
+languages: [tr, en]
+multi_language: multi_audio
+made_for_kids: true
+audience: "4-7 yaş"
+target_minutes: 3
+shorts_per_episode: 1
+aspect: "16:9"
+llm_provider: none
+script_mode: manual
+written_language: tr
+script_approval: false
+character_count: 2
+char1_name: Mavi
+char1_description: "small blue bunny with long ears, light-blue belly, big curious eyes"
+char1_voice_style: "young girl, bright and curious"
+char2_name: Kirpi
+char2_description: "small brown hedgehog with soft spikes and a round belly"
+char2_voice_style: "young boy, cheerful and quick"
+narrator: true
+visual_mode: puppet
+visual_style: "bright 2D cartoon, soft shading"
+image_provider: placeholder
+voice_provider: placeholder
+timezone: Europe/Istanbul
+produce_days: [mon, thu]
+produce_time: "09:00"
+publish_times: ["17:00"]
+publish_days: []
+youtube: false
+keywords: ["çocuk masalları", "kids stories", "neden sorusu"]
+hashtags: ["MaviVeKirpi"]
+music_dir: ""

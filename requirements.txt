@@ -1,0 +1,7 @@
+numpy>=1.26
+Pillow>=10.0
+PyYAML>=6.0
+anthropic>=1.0
+google-api-python-client>=2.100
+google-auth-oauthlib>=1.2
+tzdata>=2024.1

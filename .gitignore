@@ -1,0 +1,25 @@
+# ---- personal data: never commit ----
+.env
+.env.*
+!.env.example
+.gizli/
+kanal/
+cikti/
+client_secret*.json
+*_token.json
+*.lock
+
+# ---- python ----
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+*.egg-info/
+
+# ---- media / OS ----
+*.mp4
+*.m4a
+*.wav
+.DS_Store
+Thumbs.db
